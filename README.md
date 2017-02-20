@@ -1,0 +1,2 @@
+# Shazbot
+Shazbot - SlackBot ++
