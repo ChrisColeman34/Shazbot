@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.Bot.Connector;
+using Shazbot.BotLogic;
 
 namespace Shazbot
 {
@@ -47,8 +45,13 @@ namespace Shazbot
             {
                 case "YOUTUBE":
                     return BotActions.YouTubeSearch(activity, stringToParse[2]);
+                case "AMAZON":
+                    return null; // Currently non functioning - Seems to be an issue getting the service to even connect... Probably something with soap clients and headers
+                    // return BotActions.AmazonSearch(activity, stringToParse[2]);
                 case "TRANSLATE":
                     return null;
+                case "FORECAST":
+                    return BotActions.ForcastSearch(activity, stringToParse[2]);
                 default:
                     return null;
             }
