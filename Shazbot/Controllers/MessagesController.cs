@@ -3,21 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 
 namespace Shazbot
 {
     [BotAuthentication]
     public class MessagesController : ApiController
     {
-        /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
-        /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
             if (activity.Type == ActivityTypes.Message)
@@ -38,48 +33,26 @@ namespace Shazbot
 
         private Activity PresentNextStep(Activity activity)
         {
-            return DataAccessReply(activity);
-        }
+            var stringToParse = activity.Text.Split(' ');
 
+            var commandName = stringToParse[1];
+            var botName = stringToParse[0];
 
-        private static Activity DataAccessReply(Activity activity)
-        {
-            var reply = activity.CreateReply(string.Format("Hello {0}", activity.From.Name));
-            reply.Type = "message";
-            reply.Attachments = new List<Attachment>();
-
-            var cardImages = new List<CardImage>();
-
-            var cardButtons = new List<CardAction>
+            if (botName.ToUpper() != "@SHAZBOT")
             {
-                new CardAction
-                {
-                    Type = "postBack",
-                    Title = "Yes",
-                    Value = "Q0-1",
-                },
-                new CardAction
-                {
-                    Type = "postBack",
-                    Title = "No",
-                    Value = "Q0-0",
-                }
-            };
+                return null;
+            }
 
-            var plCard = new ThumbnailCard()
+            switch (commandName.ToUpper())
             {
-                Title = "Cheese...",
-                Subtitle = "Hello World?",
-                Images = cardImages,
-                Buttons = cardButtons
-            };
-
-            var plAttachment = plCard.ToAttachment();
-            reply.Attachments.Add(plAttachment);
-
-            return reply;
+                case "YOUTUBE":
+                    return BotActions.YouTubeSearch(activity, stringToParse[2]);
+                case "TRANSLATE":
+                    return null;
+                default:
+                    return null;
+            }
         }
-
 
         private Activity HandleSystemMessage(Activity message)
         {
